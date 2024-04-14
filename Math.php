@@ -89,6 +89,29 @@ class Math {
         }
         return $result;
     }
+    
+
+    public static function mulVectorValue($a, $b) {
+        // Implement multiplication
+        $result = [];
+        for ($i = 0; $i < count($a); $i++) {
+            $result[] = $a[$i] * $b;
+        }
+        return $result;
+    }
+    
+    public static function reluDerivative($a) {
+        // Implement ReLU derivative
+        $result = [];
+        foreach ($a as $row) {
+            $resultRow = [];
+            foreach ($row as $value) {
+                $resultRow[] = $value > 0 ? 1 : 0;
+            }
+            $result[] = $resultRow;
+        }
+        return $result;
+    }
 
     public static function softmax($a) {
         // Implement softmax

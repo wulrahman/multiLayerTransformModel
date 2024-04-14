@@ -60,12 +60,11 @@ $target_array = [
 
 
 // Set context window size
-$contextWindowSize = 5;
-$inputSize = 11;
-$outputSize = 11;
-$hiddenSize = 11;
-$numLayers = 1;
-$learningRate = 0.01;
+$contextWindowSize = 2;
+$inputSize = 20;
+$outputSize = 20;
+$hiddenSize = 20;
+$numLayers = 2;
 
 // Create a chatbot
 
@@ -86,6 +85,8 @@ if (file_exists($model_filename)) {
 $train_model = true;
 if(!$train_model ) {
     $epochs = 100;
+    $learningRate = 1e-2;
+
 
     // Train word embeddings
     for($i = 0; $i < $epochs; $i++) {
@@ -102,7 +103,9 @@ if(!$train_model ) {
     }
 }
 else {
-    $epochs = 10;
+    $epochs = 100;
+    $learningRate = 1e-6;
+
 
     // Train the chatbot
     for($i = 0; $i < $epochs; $i++) {
@@ -117,16 +120,21 @@ else {
 // $chatbot->train($input_array[0], $target_array[0], $learningRate, $epochs);
 
 // Example interaction
-$userInput = "Hey! What's up?";
+echo $target_array[10];
+$userInput = $input_array[10];
+
 $response = $chatbot->respond($userInput);
 echo "Chatbot: ";
 
 file_put_contents($model_filename, serialize($chatbot));
 
+echo "<pre>";
 print_r( $response);
+echo "</pre>";
 
 $url1=$_SERVER['REQUEST_URI'];
 header("Refresh: 1; URL=$url1");
+
 
 
 ?>

@@ -49,14 +49,14 @@ class Chatbot {
         // Preprocess input
         $processedInput = $this->preprocess($input);
 
-        $processedTarget = $this->preprocess($target);
+        $processedTarget = $this->preprocess($target, true);
 
         // Encode the input using multiple layers
         $this->multiLayerEncoderDecoder->train($processedInput, $processedTarget, $learningRate, $epochs);
     }
 
 
-    private function preprocess($input) {
+    private function preprocess($input, $isTarget = false) {
         // Tokenize input
         $tokens = explode(' ', $input);
 
@@ -68,9 +68,12 @@ class Chatbot {
         // Pad vectors to a fixed length
         $paddedVectors = $this->pad($vectors);
 
-         // Add positional encoding
-        $positionEncoding = $this->getPositionalEncoding($this->inputSize);
-        $paddedVectors = Math::add($paddedVectors, $positionEncoding);
+        if ($isTarget) {
+            // Add positional encoding
+            $positionEncoding = $this->getPositionalEncoding($this->inputSize);
+            $paddedVectors = Math::add($paddedVectors, $positionEncoding);
+        }
+
         
         // Stack vectors into a matrix
         return $paddedVectors;

@@ -42,25 +42,18 @@ class Transformer {
 
     public function train($input, $target, $learningRate, $epochs) {
         for ($epoch = 0; $epoch < $epochs; $epoch++) {
-            
             // Forward pass
             $output = $this->forward($input);
-
+    
             // Calculate loss
             $loss = Math::sub($output, $target);
-
+    
             // Backward pass
             $gradient = Math::mul($loss, $learningRate);
-
-            // Update weights
-            $this->weights = Math::sub($this->weights, $gradient);
-
-            // echo array_sum(array_map('array_sum', $loss)) . "\n\r";
-
-            // Update bias
-            $this->bias = Math::subVectorValue($this->bias, $learningRate * array_sum(array_map('array_sum', $loss)));
+            $this->backward($gradient);
         }
     }
+    
 
     public function backward($gradient) {
         // Calculate loss gradient
@@ -129,6 +122,8 @@ class Transformer {
     }
 }
 
+
+
 // // Create a transformer
 // $inputSize = 2; // Example input size
 // $outputSize = 2; // Example output size
@@ -164,4 +159,7 @@ class Transformer {
 
 // // Print the unserialized transformer
 // echo $unserializedTransformer;
+
+
 ?>
+
