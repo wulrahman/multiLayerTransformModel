@@ -18,9 +18,9 @@ class MultiLayerTransformer {
         return $output;
     }
 
-    public function backward($gradient) {
+    public function backward($gradient, $learningRate) {
         foreach (array_reverse($this->layers) as $layer) {
-            $gradient = $layer->backward($gradient);
+            $gradient = $layer->backward($gradient, $learningRate);
         }
         return $gradient;
     }

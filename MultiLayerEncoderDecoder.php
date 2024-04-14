@@ -58,17 +58,13 @@ class MultiLayerEncoderDecoder {
 
     public function backward($loss, $learningRate) {
         // Backward pass through decoder
-        $gradient = Math::mul($loss, $learningRate);
-
-        $this->decoder->backward($gradient);
+        $gradient = $this->decoder->backward($loss, $learningRate);
 
         // Backward pass through self-attention
-        $gradient = Math::mul($gradient, $learningRate);
-        $this->selfAttention->backward($gradient);
+        $gradient = $this->selfAttention->backward($gradient, $learningRate);
 
         // Backward pass through encoder
-        $gradient = Math::mul($gradient, $learningRate);
-        $this->encoder->backward($gradient);
+        $gradient = $this->encoder->backward($gradient, $learningRate);
 
         return $gradient;
     }

@@ -55,15 +55,15 @@ class Transformer {
     }
     
 
-    public function backward($gradient) {
+    public function backward($gradient, $learningRate) {
         // Calculate loss gradient
         $lossGradient = Math::matmul(Math::transpose($this->weights), $gradient);
 
         // Update weights
-        $this->weights = Math::sub($this->weights, $gradient);
+        $this->weights = Math::sub($this->weights, Math::mul($lossGradient, $learningRate));
 
         // Update bias
-        $this->bias = Math::subVectorValue($this->bias, array_sum(array_map('array_sum', $gradient)));
+        $this->bias = Math::subVectorValue($this->bias, $learningRate * array_sum(array_map('array_sum', $gradient)));
 
         return $lossGradient;
     }

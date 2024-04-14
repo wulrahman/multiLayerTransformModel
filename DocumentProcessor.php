@@ -9,7 +9,7 @@ class DocumentProcessor {
     
     public function __construct($inputSize, $outputSize, $hiddenSize, $numLayers) {
         $this->multiLayerEncoderDecoder = new MultiLayerEncoderDecoder($inputSize, $outputSize, $hiddenSize, $numLayers);
-        $this->vocab = [];
+        $this->vocab = [0 => '<PAD>', 1 => '<UNK>'];
         $this->unkTokenId = null;
         $this->inputSize = $inputSize;
         $this->outputSize = $outputSize;

@@ -25,7 +25,7 @@ class SelfAttention {
         return $output;
     }
 
-    public function backward($gradient) {
+    public function backward($gradient, $learningRate) {
         // Calculate gradient of weights
         $weightsGradient = Math::matmul($gradient, Math::transpose($this->weights));
 
@@ -33,8 +33,8 @@ class SelfAttention {
         $biasGradient = $gradient;
 
         // Update weights and bias
-        $this->weights = Math::sub($this->weights, $weightsGradient);
-        $this->bias = Math::subVectorValue($this->bias, array_sum(array_map('array_sum', $gradient)));
+        $this->weights = Math::sub($this->weights,  Math::mul($weightsGradient, $learningRate));
+        $this->bias = Math::subVectorValue($this->bias, $learningRate * array_sum(array_map('array_sum', $gradient)));
         return $weightsGradient;
     }
 
