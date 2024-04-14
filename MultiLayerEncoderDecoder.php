@@ -1,5 +1,5 @@
-// MultiLayerEncoderDecoder class
 <?php
+// MultiLayerEncoderDecoder class
 
 class MultiLayerEncoderDecoder {
     private $encoder;

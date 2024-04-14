@@ -68,8 +68,26 @@ class Chatbot {
         // Pad vectors to a fixed length
         $paddedVectors = $this->pad($vectors);
 
+         // Add positional encoding
+        $positionEncoding = $this->getPositionalEncoding($this->inputSize);
+        $paddedVectors = Math::add($paddedVectors, $positionEncoding);
+        
         // Stack vectors into a matrix
         return $paddedVectors;
+    }
+
+    private function getPositionalEncoding($sequenceLength) {
+        // Generate sinusoidal positional encoding
+        // Implementation of positional encoding depends on your requirements
+        // Here's a simple example for demonstration purposes
+        $positionalEncoding = [];
+        for ($pos = 0; $pos < $sequenceLength; $pos++) {
+            $positionalEncoding[$pos] = [];
+            for ($i = 0; $i < $this->inputSize; $i++) {
+                $positionalEncoding[$pos][$i] = sin($pos / (10000 ** ($i / $this->inputSize)));
+            }
+        }
+        return $positionalEncoding;
     }
 
 
