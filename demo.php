@@ -12,30 +12,59 @@ require_once __DIR__ . '/Chatbot.php';
 
 // Example input
 $input_array = [
-    "Hello, how are you?",
-    "Good morning! How's your day going?",
-    "Hey there! What's up?",
-    "Hi! How have you been lately?",
-    "Hello! How's everything with you?"
+    "Hey! How's your day treating you?",
+    "Good day! What's new with you?",
+    "Hi there! How's life been treating you lately?",
+    "Hello! How are things on your end?",
+    "Hey! How's the weather over there?",
+    "Good afternoon! How's your week been so far?",
+    "Hi! What have you been up to recently?",
+    "Hello! How's your family doing?",
+    "Hey! How was your weekend?",
+    "Good evening! How's your day winding down?",
+    "Hi there! How's work going for you?",
+    "Hello! How's your health these days?",
+    "Hey! Any exciting plans for the weekend?",
+    "Good day! How's your mood today?",
+    "Hi! How's the new project coming along?",
+    "Hello! How's your pet doing?",
+    "Hey! Have you tried any new restaurants lately?",
+    "Good afternoon! How's your energy level?",
+    "Hi! How's your commute been?",
+    "Hello! How's your hobby going?"
 ];
 
-// Corresponding target responses
 $target_array = [
-    "I'm doing great, thanks!",
-    "Good morning! My day is off to a good start, thank you for asking!",
-    "Hey! Not much, just enjoying the day.",
-    "Hi! I've been doing well, thank you for asking.",
-    "Hello! Everything's going well, thanks for checking in!"
+    "Hey! My day is going well, thanks for asking!",
+    "Good day! Not much, just the usual.",
+    "Hi there! Life's been treating me pretty well, thank you.",
+    "Hello! Things are going smoothly on my end.",
+    "Hey! The weather here is pretty nice.",
+    "Good afternoon! My week has been busy but good.",
+    "Hi! Just been catching up on some work.",
+    "Hello! Family is doing great, thanks for asking!",
+    "Hey! The weekend was relaxing, thanks for asking.",
+    "Good evening! My day is winding down nicely.",
+    "Hi there! Work has been challenging but fulfilling.",
+    "Hello! Health-wise, I'm feeling good.",
+    "Hey! Just planning to relax over the weekend.",
+    "Good day! My mood is pretty positive today.",
+    "Hi! The new project is coming along nicely.",
+    "Hello! My pet is doing great, thanks for asking!",
+    "Hey! Yes, tried a new place and it was amazing.",
+    "Good afternoon! Energy level is decent.",
+    "Hi! Commute has been smooth, thanks.",
+    "Hello! My hobby is keeping me busy and happy."
 ];
 
 // Set context window size
 $contextWindowSize = 2;
-$inputSize = 10;
-$outputSize = 10;
-$hiddenSize = 10;
-$numLayers = 10;
-$learningRate = 0.001;
-$epochs = 1000;
+$inputSize = 20;
+$outputSize = 20;
+$hiddenSize = 20;
+$numLayers = 1;
+$learningRate = 0.01;
+$epochs = 100;
 
 // Create a chatbot
 
