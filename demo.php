@@ -60,13 +60,12 @@ $target_array = [
 
 
 // Set context window size
-$contextWindowSize = 2;
+$contextWindowSize = 5;
 $inputSize = 11;
 $outputSize = 11;
 $hiddenSize = 11;
 $numLayers = 1;
 $learningRate = 0.01;
-$epochs = 50;
 
 // Create a chatbot
 
@@ -86,6 +85,8 @@ if (file_exists($model_filename)) {
 
 $train_model = true;
 if(!$train_model ) {
+    $epochs = 100;
+
     // Train word embeddings
     for($i = 0; $i < $epochs; $i++) {
 
@@ -101,17 +102,15 @@ if(!$train_model ) {
     }
 }
 else {
+    $epochs = 10;
+
+    // Train the chatbot
     for($i = 0; $i < $epochs; $i++) {
         foreach ($input_array as $key => $input) {
             $target = $target_array[$key];
             $chatbot->train($input, $target, $learningRate, 1);
         }
     }
-}
-// Train word embeddings
-foreach ($input_array as $key => $input) {
-    $target = $target_array[$key];
-    $chatbot->train($input, $target, $learningRate, $epochs);
 }
 
 // $chatbot->trainEmbeddings($words, $epochs, $learningRate);
