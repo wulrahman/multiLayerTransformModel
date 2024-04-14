@@ -11,17 +11,21 @@ class Transformer {
     }
 
     private function initializeWeights($inputSize, $outputSize) {
-        // Initialize weights matrix with random values
+        $scale = sqrt(6 / ($inputSize + $outputSize));
         $this->weights = [];
         for ($i = 0; $i < $outputSize; $i++) {
-            $this->weights[] = array_fill(0, $inputSize, 0.0); // Initialize with zeros, you can change this if needed
+            $this->weights[] = array_map(function() use ($scale) {
+                return mt_rand() / mt_getrandmax() * 2 * $scale - $scale;
+            }, range(0, $inputSize - 1));
         }
     }
 
     private function initializeBias($outputSize) {
-        // Initialize bias vector with zeros
-        $this->bias = array_fill(0, $outputSize, 0.0); // Initialize with zeros, you can change this if needed
+        $this->bias = array_map(function() {
+            return mt_rand() / mt_getrandmax();
+        }, range(0, $outputSize - 1));
     }
+    
     
     public function forward($input) {
         // Matrix multiplication
@@ -94,6 +98,23 @@ class Transformer {
     public function setParams($params) {
         $this->weights = $params[0];
         $this->bias = $params[1];
+    }
+
+    
+    public function initializeWeightsFromParams($params) {
+        $this->weights = $params[0];
+    }
+
+    public function initializeBiasFromParams($params) {
+        $this->bias = $params[1];
+    }
+
+    public function initializeWeightsFromSerialized($weights) {
+        $this->weights = $weights;
+    }
+
+    public function initializeBiasFromSerialized($bias) {
+        $this->bias = $bias;
     }
 
     public function __toString() {
