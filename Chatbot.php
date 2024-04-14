@@ -88,8 +88,7 @@ class Chatbot {
 
     private function pad($vectors) {
         // Pad vectors to a fixed length
-        $maxLen = 10;
-        $paddedVectors = array_pad($vectors, $maxLen, array_fill(0, $this->inputSize, 0));
+        $paddedVectors = array_pad($vectors, $this->inputSize, array_fill(0, $this->inputSize, 0));
         return $paddedVectors;
     }
 
