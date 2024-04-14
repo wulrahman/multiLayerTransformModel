@@ -68,7 +68,7 @@ $numLayers = 2;
 
 // Create a chatbot
 
-$model_filename = 'model.dat';
+$model_filename = 'model1.dat';
 
 
 if (file_exists($model_filename)) {

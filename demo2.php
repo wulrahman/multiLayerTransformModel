@@ -92,4 +92,6 @@ foreach ($decodedOutput as $output) {
 file_put_contents($model_filename, serialize($documentProcessor));
 
 
+$url1=$_SERVER['REQUEST_URI'];
+header("Refresh: 1; URL=$url1");
 ?>
