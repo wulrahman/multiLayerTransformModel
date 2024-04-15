@@ -104,7 +104,7 @@ if(!$train_model ) {
 }
 else {
     $epochs = 100;
-    $learningRate = 1e-6;
+    $learningRate = 1e-8;
 
 
     // Train the chatbot
@@ -134,7 +134,3 @@ echo "</pre>";
 
 $url1=$_SERVER['REQUEST_URI'];
 header("Refresh: 1; URL=$url1");
-
-
-
-?>

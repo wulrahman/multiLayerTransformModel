@@ -1,14 +1,11 @@
 <?php
+require_once __DIR__ . '/Math.php';
 
 class Transformer {
     private $weights;
     private $bias;
 
-    private $A;
-
-    private $Z;
-
-    private $input;
+    private $activations;
 
     public function __construct($inputSize, $outputSize) {
         // Initialize weights and bias based on input and output sizes
@@ -30,58 +27,56 @@ class Transformer {
         $this->bias = array_fill(0, $outputSize, 0.0);
     }
     
+    
     public function forward($input) {
         // Matrix multiplication
-        $this->input = $input;
         $output = Math::matmul($this->weights, $input);
 
         // Add bias
-        $this->Z = Math::addMatVector($output, $this->bias);
+        $output = Math::addMatVector($output, $this->bias);
 
         // Apply activation function (e.g., ReLU)
-        $this->A = Math::relu($this->Z);
+        $this->activations = Math::relu($output);
 
-        return $this->A;
+        return $this->activations;
     }
 
-    public function train($input, $target, $learningRate, $epochs) {
+    public function train($inputs, $targets, $learningRate, $epochs) {
+        $numInputs = count($inputs);
         for ($epoch = 0; $epoch < $epochs; $epoch++) {
-            // Forward pass
-            $output = $this->forward($input);
-    
-            // Calculate loss
-            $loss = Math::sub($output, $target);
-    
-            // Backward pass
-            $gradient = Math::mul($loss, $learningRate);
-            $this->backward($gradient, $learningRate);
+            for ($i = 0; $i < $numInputs; $i++) {
+                $input = $inputs[$i];
+                $target = $targets[$i];
+                // Forward pass
+                $output = $this->forward($input);
+        
+                // Calculate loss
+                $loss = Math::sub($output, $target);
+        
+                // Backward pass
+                $gradient = Math::mul($loss, $learningRate);
+                $this->backward($gradient, $learningRate);
+            }
         }
     }
     
     public function backward($gradient, $learningRate) {
+        // Calculate loss gradient
+        $lossGradient = Math::matmul(Math::transpose($this->weights), $gradient);
 
         // If your activation function is ReLU, compute its derivative
-        $reluDerivative = Math::reluDerivative($this->A); // You need to provide activations here
+        $reluDerivative = Math::reluDerivative($this->activations); // You need to provide activations here
 
-        // Calculate loss gradient
-        // Compute the gradient of the loss with respect to the activations of the current layer
-        $lossGradient = Math::mulMatrix($gradient, $reluDerivative);
+        // Element-wise multiplication with ReLU derivative
+        $lossGradient = Math::mulMatrix($lossGradient, $reluDerivative);
 
-        // Update weights and biases
-        $weightsGradient = Math::matmul(Math::transpose($this->input), $lossGradient);
-        $biasGradient = Math::sumVector($lossGradient); // Assuming bias is a vector
-                
         // Update weights
-        $this->weights = Math::sub($this->weights, Math::mul($weightsGradient, $learningRate));
+        $this->weights = Math::sub($this->weights, Math::mul($lossGradient, $learningRate));
 
         // Update bias
-        $this->bias = Math::subVectorValue($this->bias, $biasGradient * $learningRate);
+        $this->bias = Math::subVectorValue($this->bias, Math::sumVector(Math::sum($gradient)) * $learningRate);
 
-        // Compute the gradient for the next stage
-        $nextGradient = Math::matmul(Math::transpose($this->weights), $lossGradient);
-
-        return $nextGradient;
-
+        return $lossGradient;
     }
     public function getWeights() {
         return $this->weights;
@@ -137,43 +132,22 @@ class Transformer {
     }
 }
 
+// Example usage
+$inputSize = 2; // Example input size
+$outputSize = 2; // Example output size
 
+$transformer = new Transformer($inputSize, $outputSize);
 
-// // Create a transformer
-// $inputSize = 2; // Example input size
-// $outputSize = 2; // Example output size
+$inputs = [[[5, 6], [7, 8]], [[1, 2], [3, 4]]];
+$targets = [[[7, 8], [9, 10]], [[3, 4], [5, 6]]];
 
-// // Create a transformer
-// $transformer = new Transformer($inputSize, $outputSize);
+$learningRate = 0.01;
+$epochs = 1000;
 
-// // Define input and target
-// $inputs[] = [[5, 6], [7, 8]];
-// $targets[] = [[7, 8], [9, 10]];
-// // Define input and target
-// $inputs[] = [[1, 2], [3, 4]];
-// $targets[] = [[3, 4], [5, 6]];
+$transformer->train($inputs, $targets, $learningRate, $epochs);
 
-// // Train the transformer
-// $learningRate = 0.01;
-// $epochs = 10;
-// for($i = 0; $i < $epochs ; $i++) {
-//     foreach ($inputs as $index => $input) {
-//         $target = $targets[$index];
-//         $transformer->train($input, $target, $learningRate, $epochs);
-//     }
-// }
+print_r($transformer->forward([[5, 6], [7, 8]]));
 
-// // Print the trained transformer
-// echo $transformer;
-
-// // Serialize the transformer
-// $serializedTransformer = serialize($transformer);
-
-// // Unserialize the transformer
-// $unserializedTransformer = unserialize($serializedTransformer);
-
-// // Print the unserialized transformer
-// echo $unserializedTransformer;
-
+echo $transformer;
 
 ?>

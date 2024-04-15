@@ -55,6 +55,7 @@ class DocumentProcessor {
     public function decode($encodedOutput) {
         $decodedOutput = $this->multiLayerEncoderDecoder->decode($encodedOutput);
         
+        print_r($decodedOutput);
         $outputSentences = [];
         foreach ($decodedOutput as $output) {
             $sentence = [];

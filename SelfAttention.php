@@ -4,12 +4,17 @@ class SelfAttention {
     private $weights;
     private $bias;
 
+    private $input;
+
     public function __construct($inputSize) {
         $this->weights = Math::randomMatrix($inputSize, $inputSize);
         $this->bias = Math::randomVector($inputSize);
     }
 
     public function forward($input) {
+
+        $this->input = $input;
+
         // Calculate attention scores
         $attentionScores = Math::matmul($input, $this->weights);
 
@@ -27,16 +32,21 @@ class SelfAttention {
 
     public function backward($gradient, $learningRate) {
         // Calculate gradient of weights
-        $weightsGradient = Math::matmul($gradient, Math::transpose($this->weights));
-
+        $weightsGradient = Math::matmul(Math::transpose($this->input), $gradient);
+    
         // Calculate gradient of bias
-        $biasGradient = $gradient;
+        $biasGradient = Math::sumVector($gradient); // Assuming bias is a vector
 
+        // Calculate gradient of input
+        $inputGradient = Math::matmul($gradient, Math::transpose($this->weights));
+    
         // Update weights and bias
-        $this->weights = Math::sub($this->weights,  Math::mul($weightsGradient, $learningRate));
-        $this->bias = Math::subVectorValue($this->bias, $learningRate * array_sum(array_map('array_sum', $gradient)));
-        return $weightsGradient;
+        $this->weights = Math::sub($this->weights, Math::mul($weightsGradient, $learningRate));
+        $this->bias = Math::subVectorValue($this->bias, $biasGradient * $learningRate);
+    
+        return $inputGradient;
     }
+    
 
     public function getWeights() {
         return $this->weights;
