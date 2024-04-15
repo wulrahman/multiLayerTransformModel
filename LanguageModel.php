@@ -69,7 +69,7 @@ class LanguageModel {
 }
 
 // Example usage
-$n = 2;
+$n = 3;
 $languageModel = new LanguageModel($n);
 
 $sentences = [
@@ -79,23 +79,23 @@ $sentences = [
     "closing" => "Thank you for your patience and cooperation. We look forward to assisting you further.",
     "message_1" => "Hello! Thank you for reaching out to us. How may I assist you today?",
     "steps_1" => "To better assist you, could you please provide more details about the issue you're facing?",
-    "contact_info_1" => "You can reach our support team via email at support@example.com or by phone at 1-800-123-4567.",
+    "contact_info_1" => "You can reach our support team via email at {{support_email}} or by phone at {{mobile_number}}.",
     "closing_1" => "We appreciate your patience and understanding. Please don't hesitate to reach out if you need further assistance.",
     "message_2" => "Greetings! Thank you for contacting us. How can I help you with your inquiry?",
     "steps_2" => "In order to assist you effectively, could you please provide any error messages or specific details related to the issue?",
-    "contact_info_2" => "For immediate assistance, please contact our support team at support@example.com or call us at 1-800-555-1234.",
+    "contact_info_2" => "For immediate assistance, please contact our support team at {{support_email}} or call us at {{mobile_number}}.",
     "closing_2" => "Thank you for reaching out to us. We're dedicated to resolving your issue promptly and ensuring your satisfaction.",
     "message_3" => "Hi there! Thanks for getting in touch. What can I do to assist you today?",
     "steps_3" => "To better understand your concern, could you please provide information such as your account number or the time of the incident?",
-    "contact_info_3" => "If you require further assistance, please don't hesitate to contact our support team at support@example.com or by phone at 1-800-987-6543.",
+    "contact_info_3" => "If you require further assistance, please don't hesitate to contact our support team at {{support_email}} or by phone at {{mobile_number}}.",
     "closing_3" => "Thank you for allowing us the opportunity to assist you. We're committed to resolving your issue and ensuring a positive experience.",
     "message_refund" => "Hello! We're sorry to hear that you're not satisfied with your purchase. How can we assist you with a refund or return?",
     "steps_refund" => "To initiate a refund or return, please provide us with your order number and the reason for the return. Once we receive this information, we'll guide you through the process.",
-    "contact_info_refund" => "For further assistance with your refund or return, please contact our support team at refunds@example.com or call us at 1-800-555-6789.",
+    "contact_info_refund" => "For further assistance with your refund or return, please contact our support team at {{refund_email}} or call us at {{mobile_number}}.",
     "closing_refund" => "We understand the importance of resolving this matter promptly. Thank you for reaching out to us, and we'll do our best to assist you.",
     "message_return" => "Hello! We're here to help with your return request. How can we assist you in returning the item?",
     "steps_return" => "To proceed with the return, please provide us with your order number and details about the item you wish to return. We'll then provide you with instructions on how to return it.",
-    "contact_info_return" => "If you have any questions or need assistance with your return, please contact our support team at returns@example.com or by phone at 1-800-123-4567.",
+    "contact_info_return" => "If you have any questions or need assistance with your return, please contact our support team at {{return_email}}  or by phone at {{mobile_number}}.",
     "closing_return" => "Thank you for contacting us about your return. We appreciate your patience and understanding as we work to resolve this matter to your satisfaction."
 ];
     
@@ -105,7 +105,7 @@ $sentences = [
 $languageModel->train($sentences);
 
 $startWord = "refund";
-$numWords = 10;
+$numWords = 10000;
 $generatedSentence = $languageModel->generate($startWord, $numWords);
 
 echo "Generated Sentence: " . $generatedSentence;
