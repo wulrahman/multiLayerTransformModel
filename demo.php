@@ -82,10 +82,10 @@ if (file_exists($model_filename)) {
 }
 
 
-$train_model = true;
+$train_model = false;
 if(!$train_model ) {
     $epochs = 100;
-    $learningRate = 1e-2;
+    $learningRate = 1e-10;
 
 
     // Train word embeddings

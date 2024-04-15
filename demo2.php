@@ -14,7 +14,7 @@ require_once __DIR__ . '/DocumentProcessor.php';
 $inputSize = 4;
 $outputSize = 4;
 $hiddenSize = 4;
-$numLayers = 1;
+$numLayers = 2;
 
 function splitIntoChunks($string, $wordSize) {
     $words = explode(" ", $string); // Split the string into words
@@ -95,9 +95,9 @@ if (file_exists($model_filename)) {
     file_put_contents($model_filename, serialize($documentProcessor));
 }
 
-$train = false;
+$train = true;
 $epochs = 10;
-$learningRate = 1e-8;
+$learningRate = 1e-1;
 
 if($train) {
     for($i = 0; $i < $epochs; $i++) {
@@ -112,8 +112,10 @@ if($train) {
 }
 
 
-$questionChunks = splitIntoChunks($documents[2]['question'], $inputSize);
+$questionChunks = splitIntoChunks($documents[21]['question'], $inputSize);
 
+
+echo $documents[21]['answer'] . "\n</br>";
 $encodedOutput = $documentProcessor->encode($questionChunks);
 $decodedOutput = $documentProcessor->decode($encodedOutput);
 
