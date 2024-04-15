@@ -122,7 +122,7 @@ class Math {
             }, $row);
             $sumExpValues = array_sum($expValues);
             $resultRow = array_map(function($x) use ($sumExpValues) {
-                return $x / $sumExpValues;
+                return $x / (($sumExpValues) == 0 ? 1 : $sumExpValues);
             }, $expValues);
             $result[] = $resultRow;
         }
@@ -138,6 +138,28 @@ class Math {
         return $result;
     }
 
+    public static function mean($a) {
+        // Implement mean
+        $result = [];
+        for ($i = 0; $i < count($a); $i++) {
+            $result[] = array_sum($a[$i]) / count($a[$i]);
+        }
+        return $result;
+    }
+
+    public static function abs($a) {
+        // Implement absolute value
+        $result = [];
+        for ($i = 0; $i < count($a); $i++) {
+            $resultRow = [];
+            for ($j = 0; $j < count($a[$i]); $j++) {
+                $resultRow[] = abs($a[$i][$j]);
+            }
+            $result[] = $resultRow;
+        }
+        return $result;
+    }
+    
     public static function subVector($a, $b) {
         // Implement subtraction
         $result = [];

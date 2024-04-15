@@ -41,6 +41,7 @@ class DocumentProcessor {
     public function encode($inputSentences) {
         $input = [];
         
+
         $inputSentences = array_slice($inputSentences, 0, $this->inputSize);
         foreach ($inputSentences as $sentence) {
             $ids = $this->sentenceToIds(explode(' ', $sentence));
@@ -48,14 +49,13 @@ class DocumentProcessor {
         }
         $input = $this->padSequence($input, array_fill(0, $this->inputSize, 0), $this->inputSize);
 
+        $encodedOutput = $this->multiLayerEncoderDecoder->encode($input);
         
-        return $this->multiLayerEncoderDecoder->encode($input);
+        return $encodedOutput;
     }
     
     public function decode($encodedOutput) {
         $decodedOutput = $this->multiLayerEncoderDecoder->decode($encodedOutput);
-        
-        print_r($decodedOutput);
         $outputSentences = [];
         foreach ($decodedOutput as $output) {
             $sentence = [];
@@ -64,6 +64,7 @@ class DocumentProcessor {
             }
             $outputSentences[] = implode(' ', $sentence);
         }
+
         
         return $outputSentences;
     }
