@@ -35,7 +35,7 @@ class SelfAttention {
         $weightsGradient = Math::matmul(Math::transpose($this->input), $gradient);
     
         // Calculate gradient of bias
-        $biasGradient = Math::sumVector($gradient); // Assuming bias is a vector
+        $biasGradient = Math::sumVector(Math::transpose($gradient)); // Assuming bias is a vector
 
         // Calculate gradient of input
         $inputGradient = Math::matmul($gradient, Math::transpose($this->weights));

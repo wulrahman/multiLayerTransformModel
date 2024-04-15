@@ -53,7 +53,7 @@ class MultiLayerEncoderDecoder {
     }
 
     public function calculateLoss($output, $target) {
-        return Math::sub($output, $target);
+        return Math::relu(Math::sub($output, $target));
     }
 
     public function backward($loss, $learningRate) {
