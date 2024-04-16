@@ -185,4 +185,3 @@ foreach ($result as $row) {
     print(implode(", ", $row) . "\n");
 }
 
-?>
