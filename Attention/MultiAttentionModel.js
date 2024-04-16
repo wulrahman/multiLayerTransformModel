@@ -8,8 +8,8 @@ class MultiAttentionModel {
         this.attentionWeights = [];
         this.attentionBiases = [];
         for (let i = 0; i < numHeads; i++) {
-            this.attentionWeights[i] = new Matrix(inputSize, outputSize);
-            this.attentionBiases[i] = new Matrix(1, outputSize);
+            this.attentionWeights[i] = Matrix.randomize(inputSize, outputSize);
+            this.attentionBiases[i] = Matrix.randomize(1, outputSize);
         }
 
         // Initialize the normalization layer
@@ -36,9 +36,7 @@ class MultiAttentionModel {
         return normalizedOutput;
     }
 
-    backward(input, target, learningRate) {
-
-        const output = this.forward(input);
+    backward(input, target, output, loss, learningRate) {
 
         // Calculate the gradients for the backward weights and biases
         var gradientsBackwardOutput = Matrix.subtract(target, output);
@@ -64,6 +62,8 @@ class MultiAttentionModel {
             this.attentionBiases[i].add(gradientsAttentionBiasesLayer.multiplyScaler(learningRate));
            
         }
+        console.log("Gradients for the attention weights and biases: ", gradientsBackwardOutput);
+
 
     }
 
@@ -72,11 +72,11 @@ class MultiAttentionModel {
             // Forward pass
             const output = this.forward(input);
 
-            // Backward pass
-            this.backward(input, target, learningRate);
-
             // Calculate the loss
             const loss = this.calculateLoss(output, target);
+
+            // Backward pass
+            this.backward(input, target, output, loss, learningRate);
 
             // Print the loss for monitoring
             console.log(`Iteration ${i + 1}: Loss = ${loss}`);
