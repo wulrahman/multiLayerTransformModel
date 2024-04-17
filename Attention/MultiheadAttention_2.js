@@ -83,3 +83,36 @@ class MultiheadAttention {
         return context;
     }
 }
+
+const dModel = 20;
+const numHeads = 20;
+
+const attention = new MultiheadAttention(dModel, numHeads);
+
+const query = Matrix.randomize(dModel, numHeads);
+query.normalizeMinMax();
+const key = Matrix.randomize(dModel, numHeads)
+key.normalizeMinMax();
+const value = Matrix.randomize(dModel, numHeads);
+value.normalizeMinMax();
+const target = Matrix.randomize(dModel, numHeads);
+target.normalizeMinMax();
+
+var loss;
+for (let i = 0; i < 100; i++) {
+    const output = attention.forward(query, key, value);
+
+    loss = output.meanSquaredError(target);
+    attention.backward(query, target, output, loss, 0.00001);
+    console.log(loss);
+
+}
+
+console.log(target);
+var output = attention.forward(query, key, value);
+console.log(output);
+
+
+
+output = attention.forward(inputMatrix, key, value); 
+console.log(inputMatrix);

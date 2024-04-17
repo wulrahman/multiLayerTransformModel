@@ -194,7 +194,7 @@ class Matrix {
 
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
-                result.data[i][j] = arr[i * cols + j];
+                result.data[i][j] = arr[i * cols + j] || 0;
             }
         }
 
