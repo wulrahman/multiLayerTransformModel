@@ -36,6 +36,21 @@ class Matrix {
         return this.data[row][col];
     }
 
+    meanSquaredError(target) {
+        if (this.rows !== target.rows || this.cols !== target.cols) {
+            throw new Error("Invalid matrix dimensions for mean squared error calculation");
+        }
+        
+        let sum = 0;
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                sum += Math.pow(this.data[i][j] - target.data[i][j], 2);
+            }
+        }
+
+        return sum / (this.rows * this.cols);
+    }
+
     static multiply(a, b) {
         if (a.cols !== b.cols || a.rows !== b.rows) {
             throw new Error("Invalid matrix dimensions for multiplication");
@@ -174,6 +189,75 @@ class Matrix {
         }
     }
 
+    static fromArray(arr, rows, cols) {
+        const result = new Matrix(rows, cols);
+
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                result.data[i][j] = arr[i * cols + j];
+            }
+        }
+
+        return result;
+    }
+
+    normalize() {
+        let sum = 0;
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                sum += this.data[i][j];
+            }
+        }
+
+        const threshold = 1; // Set your desired threshold value here
+
+        if (sum > threshold) {
+            const scaleFactor = threshold / sum;
+            for (let i = 0; i < this.rows; i++) {
+                for (let j = 0; j < this.cols; j++) {
+                    this.data[i][j] *= scaleFactor;
+                }
+            }
+        }
+    }
+
+    normalizeMinMax() {
+        let min = this.data[0][0];
+        let max = this.data[0][0];
+
+        // Find the minimum and maximum values in the matrix
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                if (this.data[i][j] < min) {
+                    min = this.data[i][j];
+                }
+                if (this.data[i][j] > max) {
+                    max = this.data[i][j];
+                }
+            }
+        }
+
+        // Normalize the values using min-max normalization formula
+        const range = max - min;
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                this.data[i][j] = (this.data[i][j] - min) / range;
+            }
+        }
+    }
+
+    multiplyElementWise(b) {    
+        if (this.rows !== b.rows || this.cols !== b.cols) {
+            throw new Error("Invalid matrix dimensions for element-wise multiplication");
+        }
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                this.data[i][j] *= b.data[i][j];
+            }
+        }
+    }
+
     split(axis, start, end) {
         if (axis === 0) {
             const numRows = end - start + 1;
@@ -218,6 +302,31 @@ class Matrix {
         return result;
     }
 
+    softmax() {
+        const result = new Matrix(this.rows, this.cols);
+
+        for (let i = 0; i < this.rows; i++) {
+            let sum = 0;
+            for (let j = 0; j < this.cols; j++) {
+                sum += Math.exp(this.data[i][j]);
+            }
+            for (let j = 0; j < this.cols; j++) {
+                result.data[i][j] = Math.exp(this.data[i][j]) / sum;
+            }
+        }
+
+        return result;
+    }
+
+    getRow(row) {
+        const result = new Matrix(1, this.cols);
+
+        for (let i = 0; i < this.cols; i++) {
+            result.data[0][i] = this.data[row][i];
+        }
+
+        return result;
+    }
     
 
     static subtract(a, b) {
@@ -273,13 +382,82 @@ class Matrix {
         return result;
     }
 
+    sine() {
+        const result = new Matrix(this.rows, this.cols);
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                result.data[i][j] = Math.sin(this.data[i][j]);
+            }
+        }
+
+        return result;
+    }
+
+    sineDerivative() {
+        const result = new Matrix(this.rows, this.cols);
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                result.data[i][j] = Math.cos(this.data[i][j]);
+            }
+        }
+
+        return result;
+    }
     
+
+    relu() {
+        const result = new Matrix(this.rows, this.cols);
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                result.data[i][j] = Math.max(0, this.data[i][j]);
+            }
+        }
+
+        return result;
+    }
+
+    reluDerivative() {
+        const result = new Matrix(this.rows, this.cols);
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                result.data[i][j] = this.data[i][j] > 0 ? 1 : 0;
+            }
+        }
+
+        return result;
+    }
     static randomize(rows, cols) {
         const result = new Matrix(rows, cols);
 
         for (let i = 0; i < result.rows; i++) {
             for (let j = 0; j < result.cols; j++) {
                 result.data[i][j] = Math.random();
+            }
+        }
+
+        return result;
+    }
+
+    append(matrix) {
+        if (this.cols !== matrix.cols) {
+            throw new Error("Invalid matrix dimensions for appending");
+        }
+
+        const result = new Matrix(this.rows + matrix.rows, this.cols);
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                result.data[i][j] = this.data[i][j];
+            }
+        }
+
+        for (let i = 0; i < matrix.rows; i++) {
+            for (let j = 0; j < matrix.cols; j++) {
+                result.data[this.rows + i][j] = matrix.data[i][j];
             }
         }
 

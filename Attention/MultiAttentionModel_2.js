@@ -99,5 +99,3 @@ class MultiAttentionModel {
         return meanSquaredError;
     }
 }
-
-

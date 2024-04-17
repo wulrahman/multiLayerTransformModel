@@ -26,7 +26,6 @@ class MultiAttentionModel {
             this.attentionInput.push(input);
             attentionOutput = Matrix.dot(input, this.attentionWeights[i]);
             attentionOutput.add(this.attentionBiases[i]);
-            attentionOutput = attentionOutput.relu();
             this.attentionOutputs.push(attentionOutput);
             input = attentionOutput;
         }
@@ -41,7 +40,6 @@ class MultiAttentionModel {
 
         // Calculate the gradients for the backward weights and biases
         var gradientsBackwardOutput = Matrix.subtract(target, output);
-        gradientsBackwardOutput.normalize();
 
         // Calculate the gradients for the normalization layer
         const gradientsNormalizationLayer = Matrix.multiply(this.attentionOutputs[this.numHeads - 1], gradientsBackwardOutput);
@@ -51,12 +49,6 @@ class MultiAttentionModel {
         gradientsBackwardOutput = Matrix.multiply(gradientsBackwardOutput, this.normalizationLayer);
         // Calculate the gradients for the attention weights and biases
         for (let i = this.numHeads - 1; i >= 0; i--) {
-
-            // Calculate the gradients for the attention weights
-            const activationDerivative = this.attentionOutputs[i].reluDerivative();
-            gradientsBackwardOutput.multiplyElementWise(activationDerivative)
-            gradientsBackwardOutput.normalize();
-
 
             // Calculate the gradients for the attention weights
             const gradientsAttentionWeightsLayer = Matrix.dot(this.attentionInput[i].transpose(), gradientsBackwardOutput);
@@ -99,5 +91,3 @@ class MultiAttentionModel {
         return meanSquaredError;
     }
 }
-
-
