@@ -60,14 +60,17 @@ class BuildHuffmanGramModel {
     }
 
     textToMatrix(text, row, col) { 
-        const inputsArray = text.toLowerCase().replace(/[^\w\s]/gi, '').split(' ');
-        const embedding = new Matrix(row, col);
-        inputsArray.forEach((char, index) => {
-            const index_value = this.encode(char).split('');
-            for (let i = 0; i < index_value.length; i++) {
-                embedding.set(index, i, parseFloat(index_value[i]));
-            }
-        })
+        const inputsArray = text.toLowerCase().replace(/[^\w\s]/gi, '');
+        const encoded = this.encode(inputsArray).split('');
+        // const embedding = new Matrix(row, col);
+        // inputsArray.forEach((char, index) => {
+        //     const index_value = this.encode(char).split('');
+        //     for (let i = 0; i < index_value.length; i++) {
+        //         embedding.set(index, i, parseFloat(index_value[i]));
+        //     }
+        // })
+        // return embedding;
+        const embedding = Matrix.arraytoMatrix(encoded, row, col, 0);
         return embedding;
     }
     

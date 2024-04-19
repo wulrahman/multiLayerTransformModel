@@ -1,87 +1,66 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    const dModel = 6;
-    const numHeads = 6;
+
+    
+    const inputStrings = [
+        "What is my name?",
+        'what is his name?',
+        'what is your name?',
+    ];
+
+    const targetStrings = [
+        "Your name is Waheed Ul Rahman.",
+        "His name is David Ul Rahman.",
+        'My name is Waheed Ul Rahman.'
+    ];
+
+    const uniqueWords = new Set();
+
+    inputStrings.forEach(inputString => {
+        const words = inputString.toLowerCase().replace(/[^\w\s]/gi, '').split(' ');
+        words.forEach(word => uniqueWords.add(word));
+    });
+
+    targetStrings.forEach(targetString => {
+        const words = targetString.toLowerCase().replace(/[^\w\s]/gi, '').split(' ');
+        words.forEach(word => uniqueWords.add(word));
+    });
+
+    const dModel = uniqueWords.size;
+    const numHeads = uniqueWords.size;
     
     const huffmanModel = new BuildHuffmanGramModel();
     const attention = new MultiheadAttention(dModel, numHeads);
     const indexedDictionaryModel = new IndexDictionary();
-
-    const inputStrings = [
-        "What is my name?",
-        "What is your name?",
-        // "What is your favorite color?",
-        // "What is your favorite food?",
-        // "Please enter your question.",
-        // "Can you help me with my homework?",
-        // "What is the capital of France?",
-        // "How old are you?",
-        // "What is the meaning of life?",
-        // "What is the weather like today?"
-    ];
-
-    const targets = [
-        "Your name is Waheed Ul Rahman.",
-        "My name is Ricktorious Chat Bot.",
-        // "My favorite color is blue.",
-        // "My favorite food is pizza.",
-        // "Please enter your response.",
-        // "I can help you with your homework.",
-        // "The capital of France is Paris.",
-        // "I am 20 years old.",
-        // "The meaning of life is to be happy.",
-        // "The weather is sunny today."
-    ];
+    const wordEmbeddings = new WordEmbeddings(2, dModel, 1e-5, 10000);
 
     inputStrings.forEach(inputString => {
         indexedDictionaryModel.addWord(inputString);
     });
 
-    targets.forEach(outputTarget => {
+    targetStrings.forEach(outputTarget => {
         indexedDictionaryModel.addWord(outputTarget);
     });
 
     indexedDictionaryModel.normalizeMinMax();
 
-    const targets_array = [], inputs_array = [];
-
     inputStrings.forEach(inputString => {
-        const matrix = indexedDictionaryModel.stringToMatrix(inputString, dModel, dModel);
-        // matrix.add(stringToMatrix(inputString, dModel, dModel))
-        inputs_array.push(matrix);
+        inputString = inputString.toLowerCase().replace(/[^\w\s]/gi, '')
+        huffmanModel.buildFrequencyMap(inputString);
+        wordEmbeddings.trainWordEmbeddings(inputString);
     });
     
-    targets.forEach(outputTarget => {
-        targets_array.push(indexedDictionaryModel.stringToMatrix(outputTarget, dModel, dModel));
-    });
-
-    inputStrings.forEach(inputString => {
-        huffmanModel.buildFrequencyMap(inputString.toLowerCase().replace(/[^\w\s]/gi, ''));
-    });
-
-    targets.forEach(targetString => {
-        huffmanModel.buildFrequencyMap(targetString.toLowerCase().replace(/[^\w\s]/gi, ''));
+    targetStrings.forEach(outputTarget => {
+        outputTarget = outputTarget.toLowerCase().replace(/[^\w\s]/gi, '');
+        huffmanModel.buildFrequencyMap(outputTarget);
+        wordEmbeddings.trainWordEmbeddings(outputTarget);
     });
 
     huffmanModel.buildHuffmanTree();
     huffmanModel.buildHuffmanCodeMap();
     
-    const inputs = inputStrings.map(inputString => {
-        //return Matrix.arraytoMatrix(huffmanModel.encode(targetString.toLowerCase().replace(/[^\w\s]/gi, '')).split(''), dModel, dModel, 0)
-        return huffmanModel.textToMatrix(inputString, dModel, dModel);
-
-   });
-
-
-   const outputTargets = targets.map(targetString => {
-       //return Matrix.arraytoMatrix(huffmanModel.encode(targetString.toLowerCase().replace(/[^\w\s]/gi, '')).split(''), dModel, dModel, 0)
-       return huffmanModel.textToMatrix(targetString, dModel, dModel);
-   });
-
-
-    console.log(inputs, outputTargets, inputs_array, targets_array);
-
+    
     var loss;
     const losses = [];
 
@@ -89,15 +68,23 @@ document.addEventListener('DOMContentLoaded', function() {
     for (let i = 0; i < 10000; i++) {
 
         loss = 0;
-        for (let j = 0; j < inputs.length; j++) {
-            //const target = outputTargets[j];
-            const input = inputs_array[j];
-            const target = targets_array[j];
+        for (let j = 0; j < inputStrings.length; j++) {
+            const inputString = inputStrings[j].toLowerCase().replace(/[^\w\s]/gi, '');
+            const query =  wordEmbeddings.textToMatrix(inputString, dModel, dModel);
+            const key = huffmanModel.textToMatrix(inputString, dModel, dModel, 0)
+            const value = indexedDictionaryModel.stringToMatrix(inputString, dModel, dModel);
 
-            const output = attention.forward(inputs[j], input, input);
-            loss += output.meanSquaredError(target);
+            const targetString = targetStrings[j].toLowerCase().replace(/[^\w\s]/gi, '');
+            const target = indexedDictionaryModel.stringToMatrix(targetString, dModel, dModel); 
+            // const target  = huffmanModel.textToMatrix(targetString, dModel, dModel, 0)
+            // const target  = wordEmbeddings.textToMatrix(targetString, dModel, dModel, 0)
+
+
+            // console.log(target, value, query, key);
+            const output = attention.forward(query, value, value);
+            loss += output.meanSquaredError( target);
             // Plot the loss in a graph
-            attention.backward(inputs[j], target, output, loss, learningRate);
+            attention.backward(value, target, output, loss, learningRate);
         }
         if (losses.length > 0 && loss > losses[losses.length - 1]) {
             learningRate *= 0.995;
@@ -127,18 +114,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function generateResponse(input) {
 
-        const targetArray = input.toLowerCase().replace(/[^\w\s]/gi, '').split(' ');
-        const query = huffmanModel.textToMatrix(input, dModel, dModel);
-        const matrix = indexedDictionaryModel.stringToMatrix(input, dModel, dModel);
+        const target = input.toLowerCase().replace(/[^\w\s]/gi, '');
+        const targetArray = target.split(' ');
+        const query = wordEmbeddings.textToMatrix(target, dModel, dModel);
+        const value = indexedDictionaryModel.stringToMatrix(target, dModel, dModel);
+        const key = huffmanModel.textToMatrix(target, dModel, dModel, 0)
+
         // matrix.add(stringToMatrix(input, dModel, dModel))
-        const output = attention.forward(query, matrix, matrix);
-
-        const values = [];
-        for (let i = 0; i < output.data[0].length; i++) {
-            values.push(output.data[i].map(x => indexedDictionaryModel.findClosestMatch(x)).join(' '));
-        }
-
-        return values.join('');
+        const output = attention.forward(query, value, value);    
+        console.log(output);
+        return indexedDictionaryModel.matrix2String(output);
     }
 
 
@@ -149,7 +134,4 @@ document.addEventListener('DOMContentLoaded', function() {
         const response = generateResponse(userInput);
         console.log(response);
     });
-    
-    console.log(targets, inputs_array, targets_array, inputs, outputTargets)
-
 });

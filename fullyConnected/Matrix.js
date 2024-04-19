@@ -28,15 +28,6 @@ class Matrix {
         return result;
     }
 
-    toArray() {
-        const result = [];
-        for (let i = 0; i < this.rows; i++) {
-            for (let j = 0; j < this.cols; j++) {
-                result.push(this.data[i][j]);
-            }
-        }
-        return result;
-    }
     set(row, col, value) {
         this.data[row][col] = value;
     }
@@ -542,4 +533,3 @@ class Matrix {
         return result;
     }
 }
-

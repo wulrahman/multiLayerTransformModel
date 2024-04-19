@@ -79,6 +79,11 @@ class IndexDictionary {
         return closestMatch;
     }
 
+    matrix2String(matrix) {
+        const array = matrix.flatten().data[0];
+        return array.map(val => this.findClosestMatch(val)).join(" ");
+    }
+
     calculateDistance(query, word) {
         let distance = 0;
         for (let i = 0; i < query.length; i++) {
