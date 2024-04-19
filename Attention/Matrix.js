@@ -121,6 +121,18 @@ class Matrix {
         return result;
     }
 
+    flatten() {
+        const result = new Matrix(1, this.rows * this.cols);
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                result.data[0][i * this.cols + j] = this.data[i][j];
+            }
+        }
+
+        return result;
+    }
+
     static multiplyElementWise(a, b) {
         if (a.rows !== b.rows || a.cols !== b.cols) {
             throw new Error("Invalid matrix dimensions for element-wise multiplication");
@@ -188,6 +200,7 @@ class Matrix {
             }
         }
     }
+
 
     static fromArray(arr, rows, cols) {
         const result = new Matrix(rows, cols);
@@ -394,6 +407,19 @@ class Matrix {
         return result;
     }
 
+    static matrixValue(value, rows, cols) {
+        const result = new Matrix(rows, cols);
+
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+              
+                result.data[i][j] = value;
+            }
+        }
+
+        return result;
+    }
+
     sineDerivative() {
         const result = new Matrix(this.rows, this.cols);
 
@@ -430,6 +456,7 @@ class Matrix {
 
         return result;
     }
+
     static randomize(rows, cols) {
         const result = new Matrix(rows, cols);
 
@@ -463,6 +490,36 @@ class Matrix {
 
         return result;
     }
+
+    appendArray(array) {
+    
+        const result = new Matrix(this.rows + 1, this.cols);
+
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                result.data[i][j] = this.data[i][j];
+            }
+        }
+
+        for (let j = 0; j < array.length; j++) {
+            result.data[this.rows][j] = array[j];
+        }
+
+        return result;
+    }
+
+    static arraytoMatrix(array, rows, cols, fill) {
+        const result = new Matrix(rows, cols);
+
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                result.data[i][j] = array[i * cols + j] !== undefined ? parseFloat(array[i * cols + j]) : fill;
+            }
+        }
+
+        return result;
+    }
+    
 
     static zeros(rows, cols) {
         const result = new Matrix(rows, cols);

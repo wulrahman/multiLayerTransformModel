@@ -3,8 +3,9 @@
 <head>
     <title>My HTML Page</title>
     <script src="Matrix.js"></script>
-    <script src="MultiAttentionModel.js"></script>
+    <script src="IndexDictionary.js"></script>
     <script src="MultiheadAttention.js"></script>
+    <script src="BuildHuffmanGramModel.js"></script>
     <script src="script.js"></script>
 
 
@@ -16,10 +17,16 @@
         body {
             background-color: lightblue;
         }   
+        #lossGraph {
+            width: 800px;
+            height: 800px;
+            border: 1px solid black;
+        }
     </style>
 </head>
 <body>
     <h1>Hello, World!</h1>
     <input type="text" id="inputElement" placeholder="Enter your input">
+    <canvas id="lossGraph"></canvas>
 </body>
 </html>

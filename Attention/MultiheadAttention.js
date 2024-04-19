@@ -5,36 +5,39 @@ class MultiheadAttention {
         this.numHeads = numHeads;
         this.headSize = dModel / numHeads;
 
-        this.queryWeights = Matrix.randomize(dModel, dModel)
-        this.keyWeights = Matrix.randomize(dModel, dModel);
-        this.valueWeights = Matrix.randomize(dModel, dModel);
-        this.outputWeights = Matrix.randomize(dModel, dModel);
+        const value = 1/ (dModel * this.numHeads);
+        this.queryWeights = Matrix.matrixValue(value, dModel, dModel)
+        this.keyWeights = Matrix.matrixValue(value, dModel, dModel);
+        this.valueWeights = Matrix.matrixValue(value, dModel, dModel);
+        this.outputWeights = Matrix.matrixValue(value, dModel, dModel);
+
     }
 
     forward(query, key, value) {
         const batchSize = query.rows;
 
+        this.outputs = [];
+        this.inputs = [[query, key, value]];
+
         const queryProjected = query.dot(this.queryWeights);
         const keyProjected = key.dot(this.keyWeights);
         const valueProjected = value.dot(this.valueWeights);
 
-        const querySplit = queryProjected.split(1, 0, this.numHeads - 1);
-        const keySplit = keyProjected.split(1, 0, this.numHeads - 1);
-        const valueSplit = valueProjected.split(1, 0, this.numHeads - 1);
-
         var scaledDotProducts = new Matrix(0, this.dModel);
         for (let i = 0; i < this.numHeads; i++) {
             const scaledDotProduct = this.scaledDotProductAttention(
-                querySplit.getRow(i),
-                keySplit.getRow(i),
-                valueSplit.getRow(i),
+                queryProjected.getRow(i),
+                keyProjected.getRow(i),
+                valueProjected.getRow(i),
             );
+
             scaledDotProducts = scaledDotProducts.append(scaledDotProduct);
+            this.outputs.push(scaledDotProduct);
         }
 
         // const concatenated = Matrix.concatenate(scaledDotProducts);
         const output = scaledDotProducts.dot(this.outputWeights);
-
+        this.outputs.push(output);
         return output;
     }
 
@@ -43,12 +46,9 @@ class MultiheadAttention {
         gradientsBackwardOutput.normalize();
 
         const gradientsBackwardInput = gradientsBackwardOutput.dot(this.outputWeights.transpose());
-
-        const inputTranspose = input.transpose();
+        const inputTranspose = output.transpose();
         const gradientsOutputWeights = inputTranspose.dot(gradientsBackwardOutput);
         this.outputWeights.add(gradientsOutputWeights.multiplyScaler(learningRate));
-
-
 
         const gradientsBackwardInputWeights = [];
         for (let i = 0; i < this.numHeads; i++) {
